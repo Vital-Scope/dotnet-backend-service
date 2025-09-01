@@ -1,5 +1,5 @@
 # .github/workflows/deploy.yml
-name: Deploy Application
+name: Deploy Application1
 
 on:
   workflow_dispatch:
