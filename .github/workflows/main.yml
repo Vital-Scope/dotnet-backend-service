@@ -34,7 +34,7 @@ jobs:
       with:
         host: 176.108.245.175
         username: radis
-        password: Radis123!
+        key: ${{ secrets.SSHKEY2 }}
         port: 22
         script: |
           docker stop dotnet-backend-service || true
