@@ -1,0 +1,54 @@
+# Исключаем файлы и папки, которые не нужны для сборки Docker образа
+
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+*.md
+README*
+
+# Build output
+**/bin/
+**/obj/
+**/out/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vscode/
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+coverage.xml
+*.coverprofile
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+
+# Node.js (если есть frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
