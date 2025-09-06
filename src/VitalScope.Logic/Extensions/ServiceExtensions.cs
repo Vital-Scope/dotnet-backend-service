@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using VitalScope.Logic.Services;
 using VitalScope.Logic.Services.Study;
@@ -10,6 +11,8 @@ public static class ServiceExtensions
     {
         services.AddScoped<IInfrastructureService, InfrastructureService>();
         services.AddScoped<IStudyService, StudyService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        
         
         return services;
     }

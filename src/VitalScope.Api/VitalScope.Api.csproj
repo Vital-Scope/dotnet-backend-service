@@ -18,10 +18,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\VitalScope.Common\VitalScope.Common.csproj" />
       <ProjectReference Include="..\VitalScope.Insfrastructure\VitalScope.Insfrastructure.csproj" />
       <ProjectReference Include="..\VitalScope.Logic\VitalScope.Logic.csproj" />

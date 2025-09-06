@@ -1,6 +1,9 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using VitalScope.Common.Enums;
+using VitalScope.Common.Options;
 using VitalScope.Insfrastructure.Models;
 using VitalScope.Insfrastructure.Repositories.Base;
 using VitalScope.Insfrastructure.Specifications.Study;
@@ -12,34 +15,31 @@ namespace VitalScope.Logic.Services.Study;
 public sealed class StudyService : IStudyService
 {
     private readonly IRepository<StudyMetaInformationEntity> _repository;
+    private readonly IOptions<ExternalServiceOptions> _externalServiceOptions;
 
-    public StudyService(IRepository<StudyMetaInformationEntity> repository)
+    public StudyService(IRepository<StudyMetaInformationEntity> repository,
+        IOptions<ExternalServiceOptions> externalServiceOptions)
     {
         _repository = repository;
+        _externalServiceOptions = externalServiceOptions;
     }
 
-    public async Task AddInformationsAsync(CancellationToken cancellationToken = default)
+    public async Task AddInformationsAsync(IFormFileCollection files, CancellationToken cancellationToken = default)
     {
         using var client = new HttpClient();
 
-        var url = "http://127.0.0.1:8000/parse_wfdb/";
+        var url = $"{_externalServiceOptions.Value}/api/parse_wfdb/";
 
         using var form = new MultipartFormDataContent();
 
-  
-        var file1Path = "/Users/artemsevcenko/Downloads/1150.dat";
-        var file1Stream = File.OpenRead(file1Path);
-        var file1Content = new StreamContent(file1Stream);
-        file1Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-        form.Add(file1Content, "files", Path.GetFileName(file1Path));
+        foreach (var file in files)
+        {
+            var fileStream = file.OpenReadStream();
+            var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            form.Add(streamContent, "files", file.FileName);
+        }
 
-        var file2Path = "/Users/artemsevcenko/Downloads/1150.hea";
-        var file2Stream = File.OpenRead(file2Path);
-        var file2Content = new StreamContent(file2Stream);
-        file2Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-        form.Add(file2Content, "files", Path.GetFileName(file2Path));
-
-     
         var response = await client.PostAsync(url, form);
 
         // Читаем результат
@@ -50,24 +50,24 @@ public sealed class StudyService : IStudyService
             PropertyNameCaseInsensitive = true
         });
         var dateNow = DateTime.UtcNow;
-        
-           await _repository.AddAsync(new StudyMetaInformationEntity()
-           {
-               Id = Guid.NewGuid(),
-               Name = responseJson.Metadata.RecordName,
-               SamplingFrequency = responseJson.Metadata?.SamplingFrequency,
-               Date = responseJson.Metadata?.BaseDate,
-               Age = responseJson.Metadata?.Comments?.MaternalFactors?.Age,
-               Gravidity = responseJson.Metadata?.Comments?.MaternalFactors?.Gravidity,
-               InfoMetas = responseJson.Data.Select(x => new StudyMainInformationEntity()
-               {
-                   Id = Guid.NewGuid(),
-                   Value = x.Value.Value,
-                   Time = dateNow.AddSeconds(x.Time.Value),
-                   Channel = x.Channel.Equals("Fhr", StringComparison.OrdinalIgnoreCase) ? ChannelType.Fhr : ChannelType.Uc
 
-               }).ToList()
-           }, cancellationToken);
+        await _repository.AddAsync(new StudyMetaInformationEntity()
+        {
+            Id = Guid.NewGuid(),
+            Name = responseJson.Metadata.RecordName,
+            SamplingFrequency = responseJson.Metadata?.SamplingFrequency,
+            Date = responseJson.Metadata?.BaseDate,
+            Age = responseJson.Metadata?.Comments?.MaternalFactors?.Age,
+            Gravidity = responseJson.Metadata?.Comments?.MaternalFactors?.Gravidity,
+            InfoMetas = responseJson.Data.Select(x => new StudyMainInformationEntity()
+            {
+                Id = Guid.NewGuid(),
+                Value = x.Value.Value,
+                Time = dateNow.AddSeconds(x.Time.Value),
+                Channel = x.Channel.Equals("Fhr", StringComparison.OrdinalIgnoreCase) ? ChannelType.Fhr : ChannelType.Uc
+
+            }).ToList()
+        }, cancellationToken);
     }
 
     public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken cancellationToken = default)

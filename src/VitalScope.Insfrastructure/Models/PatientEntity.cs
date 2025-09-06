@@ -7,6 +7,6 @@ public sealed class PatientEntity : BaseEntity
     public string? Name { get; set; }
     
     public int? Age { get; set; }
-    
+
     public ICollection<StudyMetaInformationEntity>  StudyMetaInformations { get; set; }
 }

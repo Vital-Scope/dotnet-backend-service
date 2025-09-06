@@ -1,5 +1,6 @@
 using VitalScope.Insfrastructure;
 using VitalScope.Insfrastructure.Extensions;
+using VitalScope.Insfrastructure.Identity;
 
 namespace VitalScope.Api.HostedServices;
 
@@ -12,6 +13,7 @@ public sealed class MigrationHostedService(IServiceProvider provider, ILogger<Mi
         try
         {
             await provider.ApplyMigrationAsync<ApplicationDbContext>(cancellationToken);
+            await provider.ApplyMigrationAsync<ApplicationIdentityDbContext>(cancellationToken);
         }
         catch (Exception exception)
         {
