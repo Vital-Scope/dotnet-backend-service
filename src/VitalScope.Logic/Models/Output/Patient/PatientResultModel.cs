@@ -1,9 +1,11 @@
-using VitalScope.Insfrastructure.Common;
+using VitalScope.Logic.Models.Output.MetaSensor;
 
-namespace VitalScope.Insfrastructure.Models;
+namespace VitalScope.Logic.Models.Output.Patient;
 
-public sealed class PatientEntity : BaseEntity
+public class PatientResultModel
 {
+    public Guid Id { get; set; }
+    
     public string? FirstName { get; set; }
     
     public string? LastName { get; set; }
@@ -24,8 +26,5 @@ public sealed class PatientEntity : BaseEntity
     
     public string? Avatar { get; set; }
     
-    
-    public bool IsDeleted { get; set; }
-
-    public ICollection<StudyMetaInformationEntity>  StudyMetaInformations { get; set; }
+    public IEnumerable<MetaSensorOutputModel> Informations  { get; set; }
 }

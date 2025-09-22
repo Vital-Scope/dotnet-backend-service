@@ -1,9 +1,11 @@
-using VitalScope.Insfrastructure.Common;
+using VitalScope.Logic.Models.Output.MainSensor;
 
-namespace VitalScope.Insfrastructure.Models;
+namespace VitalScope.Logic.Models.Output.MetaSensor;
 
-public sealed class StudyMetaInformationEntity : BaseEntity
+public sealed class MetaSensorOutputModel
 {
+    public Guid Id { get; set; }
+    
     public DateTime? Date { get; set; }
     
     public float? Ph { get; set; }
@@ -17,10 +19,8 @@ public sealed class StudyMetaInformationEntity : BaseEntity
     public float? Lac { get; set; }
 
     public string? Diagnosis { get; set; }
-
-    public ICollection<StudyMainInformationEntity>? InfoMetas { get; set; }
-    
-    public PatientEntity? Patient { get; set; }
     
     public Guid? PatientId { get; set; }
+    
+    public IEnumerable<MainSensorOutputModel>  Sensors { get; set; }
 }

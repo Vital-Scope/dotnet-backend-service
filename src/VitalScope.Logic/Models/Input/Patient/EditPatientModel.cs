@@ -1,9 +1,9 @@
-using VitalScope.Insfrastructure.Common;
+namespace VitalScope.Logic.Models.Input.Patient;
 
-namespace VitalScope.Insfrastructure.Models;
-
-public sealed class PatientEntity : BaseEntity
+public sealed class EditPatientModel
 {
+    public Guid Id { get; set; }
+    
     public string? FirstName { get; set; }
     
     public string? LastName { get; set; }
@@ -23,9 +23,4 @@ public sealed class PatientEntity : BaseEntity
     public string? DoctorNotes { get; set; }
     
     public string? Avatar { get; set; }
-    
-    
-    public bool IsDeleted { get; set; }
-
-    public ICollection<StudyMetaInformationEntity>  StudyMetaInformations { get; set; }
 }

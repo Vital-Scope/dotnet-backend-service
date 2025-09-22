@@ -12,8 +12,8 @@ using VitalScope.Insfrastructure;
 namespace VitalScope.Insfrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250902110035_AddNewsTables")]
-    partial class AddNewsTables
+    [Migration("20250921140614_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,11 +31,38 @@ namespace VitalScope.Insfrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("Age")
+                    b.Property<string>("Anamnesis")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DoctorNotes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PregnancyNumber")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                    b.Property<int?>("PregnancyWeek")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -54,8 +81,8 @@ namespace VitalScope.Insfrastructure.Migrations
                     b.Property<Guid>("StudyMetaInformationId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<double>("Time")
+                        .HasColumnType("double precision");
 
                     b.Property<double>("Value")
                         .HasColumnType("double precision");
@@ -73,50 +100,17 @@ namespace VitalScope.Insfrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("integer");
-
-                    b.Property<float?>("Apgar1")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("Apgar5")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("BDecf")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("BE")
+                    b.Property<float?>("Be")
                         .HasColumnType("real");
 
                     b.Property<DateTime?>("Date")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("Delivtype")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Diabetes")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Gravidity")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IIstage")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Istage")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("NumSignals")
-                        .HasColumnType("integer");
-
-                    b.Property<float?>("PCO2")
+                    b.Property<float?>("Glu")
                         .HasColumnType("real");
 
-                    b.Property<int?>("Parity")
-                        .HasColumnType("integer");
+                    b.Property<float?>("Lac")
+                        .HasColumnType("real");
 
                     b.Property<Guid?>("PatientId")
                         .HasColumnType("uuid");
@@ -124,11 +118,8 @@ namespace VitalScope.Insfrastructure.Migrations
                     b.Property<float?>("Ph")
                         .HasColumnType("real");
 
-                    b.Property<int?>("Presentation")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("SamplingFrequency")
-                        .HasColumnType("integer");
+                    b.Property<float?>("СarbonDioxide")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 

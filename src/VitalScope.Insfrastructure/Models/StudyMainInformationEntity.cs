@@ -5,7 +5,7 @@ namespace VitalScope.Insfrastructure.Models;
 
 public sealed class StudyMainInformationEntity : BaseEntity
 {
-    public DateTime Time { get; set; }
+    public double Time { get; set; }
     
     public ChannelType Channel { get; set; }  // FHR / UC
     

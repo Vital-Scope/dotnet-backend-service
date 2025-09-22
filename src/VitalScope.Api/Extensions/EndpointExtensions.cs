@@ -29,16 +29,4 @@ public static class EndpointExtensions
         
         return group;
     }
-
-    private static void MapFile(this RouteGroupBuilder group)
-    {
-        group.MapPost("upload/", async (HttpContext context, IStudyService service) =>
-        {
-            var form = await context.Request.ReadFormAsync();
-            var files = form.Files;
-            
-            await service.AddInformationsAsync(files);
-            return Results.Ok();
-        });
-    }
 }

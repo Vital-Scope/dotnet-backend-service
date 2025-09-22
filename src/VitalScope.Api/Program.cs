@@ -99,26 +99,6 @@ try
     AppContext.SetSwitch(CommonConsts.TimestampMapping, true);
     
     var app = builder.Build();
-    
-    app.MapGet("/id", async (Guid id, IStudyService service) =>
-            await service.GetValuesByIdAsync(id))
-        .WithName("info-id")
-        .WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Summary = "info create",
-            Description = "Returns information about all the available books from the Amy's library.",
-            Tags = new List<OpenApiTag> { new() { Name = "Amy's Library" } }
-        });
-    
-    app.MapGet("/all", async (IStudyService service) =>
-            await service.GetMetaInformatiosAsync())
-        .WithName("info-all")
-        .WithOpenApi(x => new OpenApiOperation(x)
-        {
-            Summary = "info create",
-            Description = "Returns information about all the available books from the Amy's library.",
-            Tags = new List<OpenApiTag> { new() { Name = "Amy's Library" } }
-        });
 
     app.UseCors("AllowAll");
     app.UseRouting();

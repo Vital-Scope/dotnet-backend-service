@@ -1,8 +1,6 @@
-using VitalScope.Insfrastructure.Common;
+namespace VitalScope.Logic.Models.Input.MetaSensor;
 
-namespace VitalScope.Insfrastructure.Models;
-
-public sealed class StudyMetaInformationEntity : BaseEntity
+public sealed class MetaSensorInputModel
 {
     public DateTime? Date { get; set; }
     
@@ -17,10 +15,6 @@ public sealed class StudyMetaInformationEntity : BaseEntity
     public float? Lac { get; set; }
 
     public string? Diagnosis { get; set; }
-
-    public ICollection<StudyMainInformationEntity>? InfoMetas { get; set; }
-    
-    public PatientEntity? Patient { get; set; }
     
     public Guid? PatientId { get; set; }
 }
