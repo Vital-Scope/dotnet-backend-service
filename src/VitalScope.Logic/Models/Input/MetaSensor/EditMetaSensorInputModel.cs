@@ -2,11 +2,14 @@ using VitalScope.Common.Enums;
 
 namespace VitalScope.Logic.Models.Input.MetaSensor;
 
-public sealed class MetaSensorInputModel
+public sealed class EditMetaSensorInputModel
 {
+    public Guid Id { get; set; }
+    
     public long? DateStart { get; set; }
     
     public long? DateEnd { get; set; }
+    
     
     public int? PregnancyWeek { get; set; }
     
@@ -18,8 +21,6 @@ public sealed class MetaSensorInputModel
     public MedicalTestInputModel? MedicalTests { get; set; }
 
     public string? Diagnosis { get; set; }
-    
-    public Guid? PatientId { get; set; }
     
     public string? Notes { get; set; }
 }

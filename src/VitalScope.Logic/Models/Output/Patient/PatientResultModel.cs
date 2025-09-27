@@ -26,5 +26,5 @@ public class PatientResultModel
     
     public string? Avatar { get; set; }
     
-    public IEnumerable<MetaSensorOutputModel> Informations  { get; set; }
+    public IEnumerable<MetaSensorOutputModel> Monitorings  { get; set; }
 }

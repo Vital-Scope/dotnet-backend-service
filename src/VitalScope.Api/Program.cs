@@ -1,11 +1,12 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
+using VitalScope.Api.Conventions;
 using VitalScope.Api.Extensions;
 using VitalScope.Api.HostedServices;
 using VitalScope.Common.Consts;
@@ -15,21 +16,32 @@ using VitalScope.Insfrastructure.Extensions;
 using VitalScope.Insfrastructure.Identity;
 using VitalScope.Insfrastructure.Identity.Authentication;
 using VitalScope.Logic.Extensions;
-using VitalScope.Logic.Services.Study;
+using VitalScope.Logic.Hubs;
 
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options =>
+    {
+        options.Conventions.Add(new LowerCaseControllerRouteConvention());
+    }).AddJsonOptions(x =>
+    {
+        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+        
     
     builder.Configuration.AddEnvironmentVariables();
     builder.Configuration.AddJsonFile("appsettings.json", false, true);
     builder.Services.ConfigureOptionsConfigs(builder.Configuration);
 
     builder.Services.AddLogic();
+    
+    builder.Services.AddSignalR();
+    
     builder.Services.AddHostedService<MigrationHostedService>();
+    //builder.Services.AddHostedService<MqttHostedService>();
 
     builder.Services.AddDatabase<ApplicationDbContext>(CommonConsts.MigrationsHistoryTableName);
     builder.Services.AddDatabase<ApplicationIdentityDbContext>("__EFMigrationsIdentityHistoryApplication");
@@ -103,6 +115,8 @@ try
     app.UseCors("AllowAll");
     app.UseRouting();
     
+    app.MapHub<SensorHub>("/sensor-page");
+    
     app.UseAuthentication();
     app.UseAuthorization();
     
@@ -112,7 +126,7 @@ try
     app.UseHttpsRedirection();
 
     app.MapControllers();
-
+    
     await app.RunAsync();
 }
 catch (Exception exception) when

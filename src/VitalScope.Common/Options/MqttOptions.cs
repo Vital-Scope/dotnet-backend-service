@@ -11,4 +11,6 @@ public sealed class MqttOptions
     public string Password { get; set; }
     
     public string Topic { get; set; }
+    
+    public int Amount { get; set; }
 }

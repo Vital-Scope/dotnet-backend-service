@@ -18,7 +18,7 @@ public class PatientController(IPatientService patientService) : BaseController
         return Ok(Convert.ToBase64String(bytes));
     }
     
-    [HttpPost("create")]
+    [HttpPost()]
     [ProducesResponseType(typeof(PatientResultModel), (int)HttpStatusCode.OK)]
 
     public async Task<IActionResult> AddAsync(PatientModel model, CancellationToken cancellationToken = default)

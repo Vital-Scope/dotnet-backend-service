@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VitalScope.Insfrastructure;
@@ -11,9 +12,11 @@ using VitalScope.Insfrastructure;
 namespace VitalScope.Insfrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250925184751_AddFiledToTableMeta")]
+    partial class AddFiledToTableMeta
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,9 +103,6 @@ namespace VitalScope.Insfrastructure.Migrations
                     b.Property<float?>("Be")
                         .HasColumnType("real");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<DateTime?>("DateEnd")
                         .HasColumnType("timestamp without time zone");
 
@@ -118,9 +118,6 @@ namespace VitalScope.Insfrastructure.Migrations
                     b.Property<float?>("Lac")
                         .HasColumnType("real");
 
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
                     b.Property<Guid?>("PatientId")
                         .HasColumnType("uuid");
 
@@ -135,9 +132,6 @@ namespace VitalScope.Insfrastructure.Migrations
 
                     b.Property<int?>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<float?>("СarbonDioxide")
                         .HasColumnType("real");

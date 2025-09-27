@@ -1,40 +1,23 @@
+using System.Text;
 using MQTTnet;
+using MQTTnet.Protocol;
+using VitalScope.Logic.Models.Business;
+using VitalScope.Logic.Models.Input.MainSensor;
+using VitalScope.Logic.Services.Study;
 
 namespace VitalScope.Logic.Services;
 
 public sealed class MQTTService : IMQTTService
 {
-    private readonly MqttClientFactory _mqttClientFactory;
+    private readonly IStudyService _studyService;
 
-    public MQTTService()
+    public MQTTService(IStudyService studyService)
     {
-        _mqttClientFactory = new MqttClientFactory();
+        _studyService = studyService;
     }
 
-    public async Task SubscribeAsync(CancellationToken cancellationToken = default)
+    public async Task SubscribeAsync(SensorModel model, CancellationToken cancellationToken = default)
     {
-        using var mqttClient  = _mqttClientFactory.CreateMqttClient();
-        
-        /*var options = new MqttClientOptionsBuilder()
-            .WithTcpServer(broker, port) // MQTT broker address and port
-            .WithCredentials(username, password) // Set username and password
-            .WithClientId(clientId)
-            .WithCleanSession()
-            .Build();
-        
-        var connectResult = await mqttClient.ConnectAsync(mqttClientOptions, cancellationToken);*/
-        
-        var mqttSubscribeOptions = _mqttClientFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter("dsds")
-            .Build();
-
-        await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
-
-        mqttClient.ApplicationMessageReceivedAsync += e =>
-        {
-            Console.WriteLine($"Received message: {e.ApplicationMessage.Topic}");
-            
-            return Task.CompletedTask;
-        };
+      //  await _studyService.AddMain(new MainSensorInputModel())
     }
 }

@@ -1,17 +1,17 @@
-using System.Net.Http.Headers;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using VitalScope.Common.Enums;
+using VitalScope.Common.Helpers;
 using VitalScope.Common.Options;
 using VitalScope.Insfrastructure.Models;
 using VitalScope.Insfrastructure.Repositories.Base;
 using VitalScope.Insfrastructure.Specifications.Study;
+using VitalScope.Logic.Hubs;
+using VitalScope.Logic.Mappings;
 using VitalScope.Logic.Models.Business;
 using VitalScope.Logic.Models.Input.MainSensor;
 using VitalScope.Logic.Models.Input.MetaSensor;
-using VitalScope.Logic.Models.Output;
 using VitalScope.Logic.Models.Output.MainSensor;
 using VitalScope.Logic.Models.Output.MetaSensor;
 
@@ -21,109 +21,19 @@ public sealed class StudyService : IStudyService
 {
     private readonly IRepository<StudyMetaInformationEntity> _repository;
     private readonly IRepository<StudyMainInformationEntity> _repositoryMain;
-    private readonly IOptions<ExternalServiceOptions> _externalServiceOptions;
     private readonly ILogger<StudyService> _logger;
+    private readonly IHubContext<SensorHub> _chatHub;
 
     public StudyService(IRepository<StudyMetaInformationEntity> repository,
-        IRepository<StudyMainInformationEntity> repositoryMain, IOptions<ExternalServiceOptions> externalServiceOptions,
-        ILogger<StudyService> logger)
+        IRepository<StudyMainInformationEntity> repositoryMain, ILogger<StudyService> logger,
+        IHubContext<SensorHub> chatHub)
     {
         _repository = repository;
         _repositoryMain = repositoryMain;
-        _externalServiceOptions = externalServiceOptions;
         _logger = logger;
+        _chatHub = chatHub;
     }
 
-    /*
-    public async Task AddInformationsAsync(IFormFileCollection files, CancellationToken cancellationToken = default)
-    {
-       /* using var client = new HttpClient();
-
-        var url = $"{_externalServiceOptions.Value}/api/parse_wfdb/";
-
-        using var form = new MultipartFormDataContent();
-
-        foreach (var file in files)
-        {
-            var fileStream = file.OpenReadStream();
-            var streamContent = new StreamContent(fileStream);
-            streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            form.Add(streamContent, "files", file.FileName);
-        }
-
-        var response = await client.PostAsync(url, form);
-
-        // Читаем результат
-        var responseContent = await response.Content.ReadAsStringAsync();
-
-        var responseJson = JsonSerializer.Deserialize<ParseWfdbResponse>(responseContent, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-        var dateNow = DateTime.UtcNow;
-
-        await _repository.AddAsync(new StudyMetaInformationEntity()
-        {
-            Id = Guid.NewGuid(),
-            Name = responseJson.Metadata.RecordName,
-            SamplingFrequency = responseJson.Metadata?.SamplingFrequency,
-            Date = responseJson.Metadata?.BaseDate,
-            Age = responseJson.Metadata?.Comments?.MaternalFactors?.Age,
-            Gravidity = responseJson.Metadata?.Comments?.MaternalFactors?.Gravidity,
-            InfoMetas = responseJson.Data.Select(x => new StudyMainInformationEntity()
-            {
-                Id = Guid.NewGuid(),
-                Value = x.Value.Value,
-                Time = dateNow.AddSeconds(x.Time.Value),
-                Channel = x.Channel.Equals("Fhr", StringComparison.OrdinalIgnoreCase) ? ChannelType.Fhr : ChannelType.Uc
-
-            }).ToList()
-        }, cancellationToken);
-    }
-*/
-    /*
-public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken cancellationToken = default)
-{
-
-    var result = await _repository.GetFirstOrDefaultAsync(new StudySpecification(id), cancellationToken);
-
-    return new StudyModel
-    {
-        MetaInformatio = new MetaInformatio()
-        {
-            Id = result.Id,
-            Name = result.Name,
-            SamplingFrequency = result.SamplingFrequency,
-            Age = result.Age
-        },
-        Values = result.InfoMetas.Select(v => new Maininformation()
-        {
-          //  Id = v.Id,
-            Date = v.Time,
-            Value = v.Value,
-            ChannelType = v.Channel
-        }).OrderBy(b=>b.Date)
-    };
-
-    return default;
-}
-*/ /*
-    public async Task<IEnumerable<MetaInformatio>> GetMetaInformatiosAsync(CancellationToken cancellationToken = default)
-    {
-
-        var result = await _repository.GetAllAsync(new StudySpecification(), cancellationToken);
-
-        return result.Select(x => new MetaInformatio
-        {
-            Id = x.Id,
-            Name = x.Name,
-            SamplingFrequency = x.SamplingFrequency,
-            Age = x.Age
-        });
-
-        return default;
-    }
-    */
     public async Task<MetaSensorOutputModel> AddMetaAsync(MetaSensorInputModel model, CancellationToken cancellationToken = default)
     {
         try
@@ -133,15 +43,20 @@ public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken canc
             await _repository.AddAsync(new StudyMetaInformationEntity
             {
                 Id = id,
-                Lac = model.Lac,
-                Be = model.Be,
-                Ph = model.Ph,
-                Glu = model.Glu,
-                Date = model.Date,
+                Be = model.MedicalTests?.Be,
+                Ph = model.MedicalTests?.Ph,
+                Glu = model.MedicalTests?.Glu,
+                СarbonDioxide = model.MedicalTests?.СarbonDioxide,
+                DateStart = model.DateStart.ToDateTime(),
+                DateEnd = model.DateEnd.ToDateTime(),
+                Status = model.Status,
+                Result = model.Result,
                 Diagnosis = model.Diagnosis,
                 PatientId = model.PatientId,
-                СarbonDioxide = model.СarbonDioxide,
-                InfoMetas = null
+                InfoMetas = null,
+                CreatedAt = DateTime.Now.Date,
+                UpdatedAt = DateTime.Now.Date,
+                Notes = model.Notes
             }, cancellationToken);
 
             var result = await _repository.GetFirstOrDefaultAsync(new StudySpecification(id), cancellationToken);
@@ -150,25 +65,7 @@ public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken canc
                 return default;
             }
 
-            return new MetaSensorOutputModel
-            {
-                Id = result.Id,
-                Lac = result.Lac,
-                Be = result.Be,
-                Ph = result.Ph,
-                Glu = result.Glu,
-                Date = result.Date,
-                Diagnosis = result.Diagnosis,
-                PatientId = result.PatientId,
-                СarbonDioxide = result.СarbonDioxide,
-                Sensors = result.InfoMetas.Select(x => new MainSensorOutputModel
-                {
-                    Id = x.Id,
-                    Time = x.Time,
-                    Channel = x.Channel,
-                    Value = x.Value
-                })
-            };
+            return result.EntityToOutputModel();
 
         }
         catch (Exception e)
@@ -186,26 +83,8 @@ public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken canc
         {
             return default;
         }
-        
-        return new MetaSensorOutputModel
-        {
-            Id = entity.Id,
-            Lac = entity.Lac,
-            Be = entity.Be,
-            Ph = entity.Ph,
-            Glu = entity.Glu,
-            Date = entity.Date,
-            Diagnosis = entity.Diagnosis,
-            PatientId = entity.PatientId,
-            СarbonDioxide = entity.СarbonDioxide,
-            Sensors = entity.InfoMetas.Select(x => new MainSensorOutputModel
-            {
-                Id = x.Id,
-                Time = x.Time,
-                Channel = x.Channel,
-                Value = x.Value
-            })
-        };
+
+        return entity.EntityToOutputModel();
     }
 
     public async Task<IEnumerable<MetaSensorOutputModel>> GetAllMetaAsync(CancellationToken cancellationToken = default)
@@ -216,30 +95,12 @@ public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken canc
             return Enumerable.Empty<MetaSensorOutputModel>();
         }
 
-        return entities.Select(x => new MetaSensorOutputModel
-        {
-            Id = x.Id,
-            Lac = x.Lac,
-            Be = x.Be,
-            Ph = x.Ph,
-            Glu = x.Glu,
-            Date = x.Date,
-            Diagnosis = x.Diagnosis,
-            PatientId = x.PatientId,
-            СarbonDioxide = x.СarbonDioxide,
-            Sensors = x.InfoMetas.Select(x => new MainSensorOutputModel
-            {
-                Id = x.Id,
-                Time = x.Time,
-                Channel = x.Channel,
-                Value = x.Value
-            })
-        });
+        return entities.Select(x => x.EntityToOutputModel());
     }
 
     public async Task AddMain(MainSensorInputModel model, CancellationToken cancellationToken = default)
     {
-        var entity = await _repository.GetFirstOrDefaultAsync(new StudySpecification(model.MetaId), cancellationToken);
+        var entity = await _repository.GetFirstOrDefaultAsync(new StudySpecification(model.MonitoringId), cancellationToken);
         if (entity is null)
         {
             return;
@@ -255,6 +116,47 @@ public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken canc
         }), cancellationToken);
     }
 
+    public async Task AddMainItem(SensorModel model, IEnumerable<SensorModel> models, CancellationToken cancellationToken = default)
+    {
+        var entity = await _repository.GetFirstOrDefaultAsync(new StudySpecification(StatusType.Active), cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        await _chatHub.Clients.All.SendAsync("ReceiveSensor", model, cancellationToken);
+
+        if (models != null && models.Any())
+        {
+            await _repositoryMain.AddRangeAsync(models.Select(x => new StudyMainInformationEntity
+            {
+                Id = Guid.NewGuid(),
+                Time = x.Time,
+                Channel = (ChannelType)x.Type,
+                Value = x.Value,
+                StudyMetaInformationId = entity.Id
+            }), cancellationToken);
+        }
+    }
+
+    public async Task AddMainItems(IEnumerable<SensorModel> models, CancellationToken cancellationToken = default)
+    {
+        var entity = await _repository.GetFirstOrDefaultAsync(new StudySpecification(StatusType.Active), cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+        
+        await _repositoryMain.AddRangeAsync(models.Select(x => new StudyMainInformationEntity
+        {
+            Id = Guid.NewGuid(),
+            Time = x.Time,
+            Channel = (ChannelType)x.Type,
+            Value = x.Value,
+            StudyMetaInformationId = entity.Id
+        }), cancellationToken);
+    }
+
     public async Task<IEnumerable<MainSensorOutputModel>> GetByIdMainAsync(Guid metaId, CancellationToken cancellationToken = default)
     {
         var entities = await _repositoryMain.GetAllAsync(new StudyMainSpecification(metaId), cancellationToken);
@@ -264,8 +166,35 @@ public async Task<StudyModel> GetValuesByIdAsync(Guid id, CancellationToken canc
             Id = x.Id,
             Value = x.Value,
             Time = x.Time,
-            Channel = x.Channel,
+            Channel = x.Channel
         });
 
+    }
+
+    public async Task<MetaSensorOutputModel> EditMetaAsync(EditMetaSensorInputModel model, CancellationToken cancellationToken = default)
+    {
+        var entity = await _repository.GetFirstOrDefaultAsync(new StudySpecification(model.Id), cancellationToken);
+        if (entity is null)
+        {
+            return default;
+        }
+
+        entity.DateStart = model.DateStart.ToDateTime();
+        entity.DateEnd = model.DateEnd.ToDateTime();
+        entity.Status = model.Status;
+        entity.Result = model.Result;
+        entity.Diagnosis = model.Diagnosis;
+        entity.Notes = model.Notes;
+        entity.Ph = model.MedicalTests?.Ph;
+        entity.Glu = model.MedicalTests?.Glu;
+        entity.Lac = model.MedicalTests?.Lac;
+        entity.СarbonDioxide = model.MedicalTests?.СarbonDioxide;
+        entity.Be = model.MedicalTests?.Be;
+        entity.PregnancyWeek = model.PregnancyWeek;
+        entity.UpdatedAt = DateTime.Now;
+
+        await _repository.UpdateAsync(entity, cancellationToken);
+
+        return entity.EntityToOutputModel();
     }
 }

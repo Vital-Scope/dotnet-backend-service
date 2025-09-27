@@ -8,6 +8,8 @@ public static class ConfigureOptionsExtensions
     { 
         services.Configure<ExternalServiceOptions>(config.GetSection(nameof(ExternalServiceOptions)));
 
+        services.Configure<MqttOptions>(config.GetSection(nameof(MqttOptions)));
+        
         return services;
     }
 }

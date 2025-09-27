@@ -95,16 +95,16 @@ public sealed class PatientService : IPatientService
                 Anamnesis = result.Anamnesis,
                 DoctorNotes = result.DoctorNotes,
                 Avatar = result.Avatar,
-                Informations = result.StudyMetaInformations.Select(c =>
+                Monitorings = result.StudyMetaInformations.Select(c =>
                 {
                     return new MetaSensorOutputModel
                     {
                         Id = c.Id,
-                        Ph = c.Ph,
-                        Be = c.Be,
                         Diagnosis = c.Diagnosis,
-                        СarbonDioxide = c.СarbonDioxide,
-                        Glu = c.Glu,
+                     //   Ph = c.Ph,
+                     //   Be = c.Be,
+                      //  СarbonDioxide = c.СarbonDioxide,
+                      //  Glu = c.Glu,
                         Sensors = c.InfoMetas.Select(v => new MainSensorOutputModel
                         {
                             Id = v.Id,
