@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using VitalScope.Logic.Patient;
 using VitalScope.Logic.Services;
+using VitalScope.Logic.Services.Health;
 using VitalScope.Logic.Services.Session;
 using VitalScope.Logic.Services.Study;
 
@@ -16,6 +17,8 @@ public static class ServiceExtensions
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<ISessionService, SessionService>();
+        
+        services.AddScoped<IHealthService, HealthService>();
         
         services.AddScoped<IMQTTService, MQTTService>();
         

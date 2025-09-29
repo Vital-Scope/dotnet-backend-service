@@ -21,6 +21,8 @@ public class StudySpecification : BaseSpecification<StudyMetaInformationEntity>
     {
         Trackable = trackable;
         
+        AddInclude(t => t.Include(b => b.Patient));
+        
         AddInclude(t => t.Include(b => b.InfoMetas));
     }
     
@@ -34,5 +36,7 @@ public class StudySpecification : BaseSpecification<StudyMetaInformationEntity>
     public StudySpecification(StatusType statusType) : base(x=>x.Status == statusType)
     {
         Trackable = false;
+        
+        AddInclude(t => t.Include(b => b.Patient));
     }
 }

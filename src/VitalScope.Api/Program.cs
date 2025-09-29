@@ -40,6 +40,14 @@ try
     
     builder.Services.AddSignalR();
     
+    builder.Services.AddHttpClient("NodeHttpClient", (s, client) =>
+    {
+        var options = s.GetRequiredService<IConfiguration>().GetSection("ExternalServiceOptions").Get<ExternalServiceOptions>();
+        
+        client.BaseAddress = new Uri(options.EmulatorHost);
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+    });
+    
     builder.Services.AddHostedService<MigrationHostedService>();
     builder.Services.AddHostedService<MqttHostedService>();
 
