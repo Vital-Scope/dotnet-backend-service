@@ -12,7 +12,10 @@ public interface IStudyService
     
     Task<MetaSensorOutputModel> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     
-    Task<IEnumerable<MetaSensorOutputModel>> GetAllMetaAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<MetaSensorOutputModel>> GetAllMetaWithSensorAsync(CancellationToken cancellationToken = default);
+    
+    Task<IEnumerable<MetaSensorWithoutSensorOutputModel>> GetAllMetaAsync(CancellationToken cancellationToken = default);
+
     
     Task AddMain(MainSensorInputModel  model, CancellationToken cancellationToken = default);
     

@@ -12,7 +12,7 @@ public class PatientResultModel
     
     public string? MiddleName { get; set; }
     
-    public DateTime? BirthDate { get; set; }
+    public long? BirthDate { get; set; }
     
     public Guid? ClientId { get; set; }
     
@@ -26,5 +26,5 @@ public class PatientResultModel
     
     public string? Avatar { get; set; }
     
-    public IEnumerable<MetaSensorOutputModel> Monitorings  { get; set; }
+    public IEnumerable<MetaSensorWithoutSensorOutputModel> Monitorings  { get; set; }
 }

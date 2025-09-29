@@ -8,6 +8,7 @@ public sealed class EditMetaSensorInputModel
     
     public long? DateStart { get; set; }
     
+    
     public long? DateEnd { get; set; }
     
     

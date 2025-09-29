@@ -41,7 +41,7 @@ try
     builder.Services.AddSignalR();
     
     builder.Services.AddHostedService<MigrationHostedService>();
-    //builder.Services.AddHostedService<MqttHostedService>();
+    builder.Services.AddHostedService<MqttHostedService>();
 
     builder.Services.AddDatabase<ApplicationDbContext>(CommonConsts.MigrationsHistoryTableName);
     builder.Services.AddDatabase<ApplicationIdentityDbContext>("__EFMigrationsIdentityHistoryApplication");

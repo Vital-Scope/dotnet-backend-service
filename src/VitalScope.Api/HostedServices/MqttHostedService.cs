@@ -34,6 +34,7 @@ public class MqttHostedService : BackgroundService
 
        var options = new MqttClientOptionsBuilder()
            .WithClientId("aspnet-subscriber")
+           .WithCredentials("user1", "user1")
            .WithTcpServer(_options.CurrentValue.Host, _options.CurrentValue.Port)
            .WithCleanSession(false)
            .Build();
@@ -75,7 +76,6 @@ public class MqttHostedService : BackgroundService
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
         }
 
     }

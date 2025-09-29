@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
+using VitalScope.Common.Helpers;
 using VitalScope.Insfrastructure.Models;
 using VitalScope.Insfrastructure.Repositories.Base;
 using VitalScope.Insfrastructure.Specifications.Patient;
+using VitalScope.Logic.Mappings;
 using VitalScope.Logic.Models.Input.Patient;
 using VitalScope.Logic.Models.Output.MainSensor;
 using VitalScope.Logic.Models.Output.MetaSensor;
@@ -32,7 +34,7 @@ public sealed class PatientService : IPatientService
                 FirstName = patient.FirstName,
                 LastName = patient.LastName,
                 MiddleName = patient.MiddleName,
-                BirthDate = patient.BirthDate,
+                BirthDate = patient.BirthDate.ToDateTime(),
                 ClientId = patient.ClientId,
                 PregnancyNumber = patient.PregnancyNumber,
                 PregnancyWeek = patient.PregnancyWeek,
@@ -54,7 +56,7 @@ public sealed class PatientService : IPatientService
                 FirstName = result.FirstName,
                 LastName = result.LastName,
                 MiddleName = result.MiddleName,
-                BirthDate = result.BirthDate,
+                BirthDate = result.BirthDate.ToTime(),
                 ClientId = result.ClientId,
                 PregnancyNumber = result.PregnancyNumber,
                 PregnancyWeek = result.PregnancyWeek,
@@ -88,31 +90,36 @@ public sealed class PatientService : IPatientService
                 FirstName = result.FirstName,
                 LastName = result.LastName,
                 MiddleName = result.MiddleName,
-                BirthDate = result.BirthDate,
+                BirthDate = result.BirthDate.ToTime(),
                 ClientId = result.ClientId,
                 PregnancyNumber = result.PregnancyNumber,
                 PregnancyWeek = result.PregnancyWeek,
                 Anamnesis = result.Anamnesis,
                 DoctorNotes = result.DoctorNotes,
                 Avatar = result.Avatar,
-                Monitorings = result.StudyMetaInformations.Select(c =>
+                Monitorings = result.StudyMetaInformations.Select(entity => new MetaSensorWithoutSensorOutputModel
                 {
-                    return new MetaSensorOutputModel
-                    {
-                        Id = c.Id,
-                        Diagnosis = c.Diagnosis,
-                     //   Ph = c.Ph,
-                     //   Be = c.Be,
-                      //  СarbonDioxide = c.СarbonDioxide,
-                      //  Glu = c.Glu,
-                        Sensors = c.InfoMetas.Select(v => new MainSensorOutputModel
+                    Id = entity.Id,
+                    MedicalTests = entity.ValidateFields()
+                        ? new MedicalTestOutputModel()
                         {
-                            Id = v.Id,
-                            Channel = v.Channel,
-                            Time = v.Time,
-                            Value = v.Value,
-                        })
-                    };
+                            Lac = entity.Lac,
+                            Be = entity.Be,
+                            Ph = entity.Ph,
+                            Glu = entity.Glu,
+                            СarbonDioxide = entity.СarbonDioxide,
+                        }
+                        : null,
+                    Status = entity.Status,
+                    Result = entity.Result,
+                    DateStart = entity.DateStart.ToTime(),
+                    DateEnd = entity.DateEnd.ToTime(),
+                    Diagnosis = entity.Diagnosis,
+                    PatientId = entity.PatientId,
+                    CreatedAt = entity.CreatedAt.ToTime(),
+                    UpdatedAt = entity.UpdatedAt.ToTime(),
+                    Notes = entity.Notes,
+                    FullName = MonitoringMappings.GetFullName(entity.Patient)
                 })
             };
         }
@@ -136,7 +143,7 @@ public sealed class PatientService : IPatientService
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 MiddleName = x.MiddleName,
-                BirthDate = x.BirthDate,
+                BirthDate = x.BirthDate.ToTime(),
                 ClientId = x.ClientId,
                 PregnancyNumber = x.PregnancyNumber,
                 PregnancyWeek = x.PregnancyWeek,
@@ -191,7 +198,7 @@ public sealed class PatientService : IPatientService
             result.FirstName = patient.FirstName;
             result.LastName = patient.LastName;
             result.MiddleName = patient.MiddleName;
-            result.BirthDate = patient.BirthDate;
+            result.BirthDate = patient.BirthDate.ToDateTime();
             result.ClientId = patient.ClientId;
             result.PregnancyNumber = patient.PregnancyNumber;
             result.PregnancyWeek = patient.PregnancyWeek;
@@ -207,7 +214,7 @@ public sealed class PatientService : IPatientService
                 FirstName = result.FirstName,
                 LastName = result.LastName,
                 MiddleName = result.MiddleName,
-                BirthDate = result.BirthDate,
+                BirthDate = result.BirthDate.ToTime(),
                 ClientId = result.ClientId,
                 PregnancyNumber = result.PregnancyNumber,
                 PregnancyWeek = result.PregnancyWeek,

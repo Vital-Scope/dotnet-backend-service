@@ -56,7 +56,7 @@ public sealed class StudyService : IStudyService
                 InfoMetas = null,
                 CreatedAt = DateTime.Now.Date,
                 UpdatedAt = DateTime.Now.Date,
-                Notes = model.Notes
+                Notes = model.Notes,
             }, cancellationToken);
 
             var result = await _repository.GetFirstOrDefaultAsync(new StudySpecification(id), cancellationToken);
@@ -87,7 +87,7 @@ public sealed class StudyService : IStudyService
         return entity.EntityToOutputModel();
     }
 
-    public async Task<IEnumerable<MetaSensorOutputModel>> GetAllMetaAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<MetaSensorOutputModel>> GetAllMetaWithSensorAsync(CancellationToken cancellationToken = default)
     {
         var entities = await _repository.GetAllAsync(new StudySpecification(), cancellationToken);
         if (!entities.Any())
@@ -96,6 +96,40 @@ public sealed class StudyService : IStudyService
         }
 
         return entities.Select(x => x.EntityToOutputModel());
+    }
+
+    public async Task<IEnumerable<MetaSensorWithoutSensorOutputModel>> GetAllMetaAsync(CancellationToken cancellationToken = default)
+    {
+        var entities = await _repository.GetAllAsync(new StudySpecification(), cancellationToken);
+        if (!entities.Any())
+        {
+            return Enumerable.Empty<MetaSensorWithoutSensorOutputModel>();
+        }
+        
+        return entities.Select(entity => new MetaSensorWithoutSensorOutputModel
+        {
+            Id = entity.Id,
+            MedicalTests = entity.ValidateFields()
+                ? new MedicalTestOutputModel()
+                {
+                    Lac = entity.Lac,
+                    Be = entity.Be,
+                    Ph = entity.Ph,
+                    Glu = entity.Glu,
+                    СarbonDioxide = entity.СarbonDioxide,
+                }
+                : null,
+            Status = entity.Status,
+            Result = entity.Result,
+            DateStart = entity.DateStart.ToTime(),
+            DateEnd = entity.DateEnd.ToTime(),
+            Diagnosis = entity.Diagnosis,
+            PatientId = entity.PatientId,
+            CreatedAt = entity.CreatedAt.ToTime(),
+            UpdatedAt = entity.UpdatedAt.ToTime(),
+            Notes = entity.Notes,
+            FullName = MonitoringMappings.GetFullName(entity.Patient)
+        });
     }
 
     public async Task AddMain(MainSensorInputModel model, CancellationToken cancellationToken = default)
@@ -179,8 +213,6 @@ public sealed class StudyService : IStudyService
             return default;
         }
 
-        entity.DateStart = model.DateStart.ToDateTime();
-        entity.DateEnd = model.DateEnd.ToDateTime();
         entity.Status = model.Status;
         entity.Result = model.Result;
         entity.Diagnosis = model.Diagnosis;
@@ -192,6 +224,7 @@ public sealed class StudyService : IStudyService
         entity.Be = model.MedicalTests?.Be;
         entity.PregnancyWeek = model.PregnancyWeek;
         entity.UpdatedAt = DateTime.Now;
+        entity.PregnancyWeek = model.PregnancyWeek;
 
         await _repository.UpdateAsync(entity, cancellationToken);
 

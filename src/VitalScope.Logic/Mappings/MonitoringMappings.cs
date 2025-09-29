@@ -38,6 +38,34 @@ public static class MonitoringMappings
             CreatedAt = entity.CreatedAt.ToTime(),
             UpdatedAt = entity.UpdatedAt.ToTime(),
             Notes = entity.Notes,
+            FullName = GetFullName(entity.Patient)
         };
+    }
+
+    public static string GetFullName(PatientEntity? patient)
+    {
+        if (patient == null)
+        {
+            return string.Empty;
+        }
+
+        var result = string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(patient.LastName))
+        {
+            result += patient.LastName + " ";
+        }
+
+        if (!string.IsNullOrWhiteSpace(patient.FirstName))
+        {
+            result += patient.FirstName + " ";
+        }
+
+        if (!string.IsNullOrWhiteSpace(patient.MiddleName))
+        {
+            result += patient.MiddleName + " ";
+        }
+
+        return result.Trim();
     }
 }

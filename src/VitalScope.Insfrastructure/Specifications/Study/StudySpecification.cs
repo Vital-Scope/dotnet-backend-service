@@ -12,6 +12,8 @@ public class StudySpecification : BaseSpecification<StudyMetaInformationEntity>
         Trackable = trackable;
         
         AddInclude(t => t.Include(b => b.InfoMetas));
+        
+        AddInclude(r=>r.Include(x=>x.Patient));
 
     }
     

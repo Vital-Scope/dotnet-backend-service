@@ -8,7 +8,7 @@ public sealed class PatientModel
     
     public string? MiddleName { get; set; }
     
-    public DateTime? BirthDate { get; set; }
+    public long? BirthDate { get; set; }
     
     public Guid? ClientId { get; set; }
     
