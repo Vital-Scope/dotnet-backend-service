@@ -12,7 +12,7 @@ public class HealthService : IHealthService
     {
         using var client = _httpClientFactory.CreateClient("NodeHttpClient");
         
-        var result = await client.GetAsync("health", cancellationToken);
+        var result = await client.GetAsync("health-proxy", cancellationToken);
         if (result.IsSuccessStatusCode)
         {
             return true;

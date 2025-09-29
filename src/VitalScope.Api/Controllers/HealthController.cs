@@ -12,7 +12,7 @@ public sealed class HealthController : BaseController
         _healthService = healthService;
     }
     
-    [HttpGet("health")]
+    [HttpGet]
     public async Task<IActionResult> GetHealthAsync(CancellationToken cancellationToken = default)
     {
         var result = await _healthService.CheckHealth(cancellationToken);
