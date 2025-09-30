@@ -81,7 +81,9 @@ try
             {
                 corsPolicyBuilder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin()   // разрешить любые домены
+                    .AllowCredentials();
             });
     });
     
@@ -122,13 +124,8 @@ try
 
     app.UseCors("AllowAll");
     app.UseRouting();
-    
-    app.MapHub<SensorHub>("/sensor-page")
-        .RequireCors(cors => cors
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-        );
+
+    app.MapHub<SensorHub>("/sensor-page");
     
     app.UseAuthentication();
     app.UseAuthorization();
