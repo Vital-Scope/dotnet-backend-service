@@ -79,10 +79,10 @@ try
         options.AddPolicy("AllowAll",
             corsPolicyBuilder =>
             {
-                corsPolicyBuilder.AllowAnyOrigin()
-                    .AllowAnyMethod()
+                corsPolicyBuilder
                     .AllowAnyHeader()
-                    .AllowAnyOrigin()   // разрешить любые домены
+                    .AllowAnyMethod()
+                    .SetIsOriginAllowed(_ => true) // разрешает вообще любой Origin
                     .AllowCredentials();
             });
     });
