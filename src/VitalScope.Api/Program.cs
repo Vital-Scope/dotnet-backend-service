@@ -123,7 +123,12 @@ try
     app.UseCors("AllowAll");
     app.UseRouting();
     
-    app.MapHub<SensorHub>("/sensor-page");
+    app.MapHub<SensorHub>("/sensor-page")
+        .RequireCors(cors => cors
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+        );
     
     app.UseAuthentication();
     app.UseAuthorization();
