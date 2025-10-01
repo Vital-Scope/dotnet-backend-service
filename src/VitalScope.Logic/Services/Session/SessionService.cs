@@ -74,7 +74,7 @@ public sealed class SessionService : ISessionService
             }
             else
             {
-             /*   var result = await _mlService.CalculateRiskAsync(model.MonitoringId, cancellationToken);
+                var result = await _mlService.CalculateRiskAsync(model.MonitoringId, cancellationToken);
                 if (result.HasValue)
                 {
                     _logger.LogInformation($"Вероятность отклонения - {result}");
@@ -92,8 +92,7 @@ public sealed class SessionService : ISessionService
                         enity.Result = ResultType.Hypoxia;
                     }
                 }
-            
-                */
+                
                 enity.DateEnd = DateTime.Now;
             }
         
