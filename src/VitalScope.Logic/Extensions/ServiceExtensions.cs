@@ -19,6 +19,7 @@ public static class ServiceExtensions
         services.AddScoped<ISessionService, SessionService>();
         
         services.AddScoped<IHealthService, HealthService>();
+        services.AddScoped<IMLService, MLService>();
         
         services.AddScoped<IMQTTService, MQTTService>();
         

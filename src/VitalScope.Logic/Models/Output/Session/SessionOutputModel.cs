@@ -6,6 +6,8 @@ public class SessionOutputModel
 {
     public StatusType? Status { get; set; }
     
+    public ResultType? ResultType { get; set; }
+    
     public Guid? MonitoringId { get; set; }
     
     public Guid? PatientId { get; set; }

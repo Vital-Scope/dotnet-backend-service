@@ -48,6 +48,14 @@ try
         client.DefaultRequestHeaders.Add("Accept", "application/json");
     });
     
+    builder.Services.AddHttpClient("MLHttpClient", (s, client) =>
+    {
+        var options = s.GetRequiredService<IConfiguration>().GetSection("ExternalServiceOptions").Get<ExternalServiceOptions>();
+        
+        client.BaseAddress = new Uri(options.MlHost);
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+    });
+    
     builder.Services.AddHostedService<MigrationHostedService>();
     builder.Services.AddHostedService<MqttHostedService>();
 

@@ -13,11 +13,14 @@ public sealed class SessionService : ISessionService
 {
     private readonly IRepository<StudyMetaInformationEntity> _repository;
     private readonly ILogger<SessionService> _logger;
+    private readonly IMLService _mlService;
 
-    public SessionService(IRepository<StudyMetaInformationEntity> repository, ILogger<SessionService> logger)
+    public SessionService(IRepository<StudyMetaInformationEntity> repository, ILogger<SessionService> logger,
+        IMLService mlService)
     {
         _repository = repository;
         _logger = logger;
+        _mlService = mlService;
     }
 
 
@@ -69,6 +72,25 @@ public sealed class SessionService : ISessionService
         }
         else
         {
+            var result = await _mlService.CalculateRiskAsync(model.MonitoringId, cancellationToken);
+            if (result.HasValue)
+            {
+                _logger.LogInformation($"Вероятность отклонения - {result}");
+                
+                if (result < 0.3m)
+                {
+                    enity.Result = ResultType.Regular;
+                }
+                else if (result < 0.7m)
+                {
+                    enity.Result = ResultType.Risk;
+                }
+                else
+                {
+                    enity.Result = ResultType.Hypoxia;
+                }
+            }
+            
             enity.DateEnd = DateTime.Now;
         }
         
@@ -83,7 +105,8 @@ public sealed class SessionService : ISessionService
             LastName = enity.Patient?.LastName,
             MiddleName = enity.Patient?.MiddleName,
             DateStart = enity.DateStart.ToTime(),
-            DateEnd = enity.DateEnd.ToTime()
+            DateEnd = enity.DateEnd.ToTime(),
+            ResultType = enity.Result
         };
     }
 }
