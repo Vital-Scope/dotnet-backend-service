@@ -60,53 +60,63 @@ public sealed class SessionService : ISessionService
 
     public async Task<SessionOutputModel> SetStatus(EditSessionInputModel model, CancellationToken cancellationToken = default)
     {
-        var enity = await _repository.GetFirstOrDefaultAsync(new StudySpecification(model.MonitoringId),
-            cancellationToken);
-        
-        enity.Status = model.Status;
-        enity.UpdatedAt = DateTime.Now;
-        
-        if (model.Status == StatusType.Active)
+        try
         {
-            enity.DateStart = DateTime.Now;
-        }
-        else
-        {
-            var result = await _mlService.CalculateRiskAsync(model.MonitoringId, cancellationToken);
-            if (result.HasValue)
+            var enity = await _repository.GetFirstOrDefaultAsync(new StudySpecification(model.MonitoringId),
+                cancellationToken);
+        
+            enity.Status = model.Status;
+            enity.UpdatedAt = DateTime.Now;
+        
+            if (model.Status == StatusType.Active)
             {
-                _logger.LogInformation($"Вероятность отклонения - {result}");
-                
-                if (result < 0.3m)
-                {
-                    enity.Result = ResultType.Regular;
-                }
-                else if (result < 0.7m)
-                {
-                    enity.Result = ResultType.Risk;
-                }
-                else
-                {
-                    enity.Result = ResultType.Hypoxia;
-                }
+                enity.DateStart = DateTime.Now;
             }
+            else
+            {
+             /*   var result = await _mlService.CalculateRiskAsync(model.MonitoringId, cancellationToken);
+                if (result.HasValue)
+                {
+                    _logger.LogInformation($"Вероятность отклонения - {result}");
+                
+                    if (result < 0.3m)
+                    {
+                        enity.Result = ResultType.Regular;
+                    }
+                    else if (result < 0.7m)
+                    {
+                        enity.Result = ResultType.Risk;
+                    }
+                    else
+                    {
+                        enity.Result = ResultType.Hypoxia;
+                    }
+                }
             
-            enity.DateEnd = DateTime.Now;
+                */
+                enity.DateEnd = DateTime.Now;
+            }
+        
+            await _repository.UpdateAsync(enity, cancellationToken);
+        
+            return new SessionOutputModel
+            {
+                Status = enity.Status,
+                PatientId = enity.PatientId,
+                MonitoringId = enity.Id,
+                FirstName = enity.Patient?.FirstName,
+                LastName = enity.Patient?.LastName,
+                MiddleName = enity.Patient?.MiddleName,
+                DateStart = enity.DateStart.ToTime(),
+                DateEnd = enity.DateEnd.ToTime(),
+                ResultType = enity.Result
+            };
         }
-        
-        await _repository.UpdateAsync(enity, cancellationToken);
-        
-        return new SessionOutputModel
+        catch (Exception e)
         {
-            Status = enity.Status,
-            PatientId = enity.PatientId,
-            MonitoringId = enity.Id,
-            FirstName = enity.Patient?.FirstName,
-            LastName = enity.Patient?.LastName,
-            MiddleName = enity.Patient?.MiddleName,
-            DateStart = enity.DateStart.ToTime(),
-            DateEnd = enity.DateEnd.ToTime(),
-            ResultType = enity.Result
-        };
+            _logger.LogError(e, "Error setting status");
+        }
+
+        return default;
     }
 }
