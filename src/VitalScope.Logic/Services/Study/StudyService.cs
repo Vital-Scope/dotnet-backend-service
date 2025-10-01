@@ -84,6 +84,11 @@ public sealed class StudyService : IStudyService
             return default;
         }
 
+        if (entity.InfoMetas.Any())
+        {
+            entity.InfoMetas = entity.InfoMetas.OrderBy(q => q.Time).ToList();
+        }
+
         return entity.EntityToOutputModel();
     }
 
