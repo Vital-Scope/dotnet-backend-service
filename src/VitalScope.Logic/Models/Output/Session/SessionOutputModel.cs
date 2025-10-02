@@ -21,4 +21,6 @@ public class SessionOutputModel
     public long? DateStart { get; set; }
     
     public long? DateEnd { get; set; }
+    
+    public float? Percent { get; set; }
 }

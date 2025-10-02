@@ -91,6 +91,7 @@ public sealed class SessionService : ISessionService
                     {
                         enity.Result = ResultType.Hypoxia;
                     }
+                    enity.Percent = (float)result.Value;
                 }
                 
                 enity.DateEnd = DateTime.Now;
@@ -108,7 +109,8 @@ public sealed class SessionService : ISessionService
                 MiddleName = enity.Patient?.MiddleName,
                 DateStart = enity.DateStart.ToTime(),
                 DateEnd = enity.DateEnd.ToTime(),
-                ResultType = enity.Result
+                ResultType = enity.Result,
+                Percent = enity.Percent
             };
         }
         catch (Exception e)

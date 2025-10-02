@@ -41,6 +41,8 @@ public sealed class StudyMetaInformationEntity : BaseEntity
     
     public string? Notes { get; set; }
     
+    public float? Percent { get; set; }
+    
     public bool ValidateFields()
     {
         return AnyNotNull(Ph, Glu, СarbonDioxide, Be, Lac);

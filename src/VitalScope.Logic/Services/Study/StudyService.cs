@@ -134,7 +134,8 @@ public sealed class StudyService : IStudyService
             UpdatedAt = entity.UpdatedAt.ToTime(),
             Notes = entity.Notes,
             FullName = MonitoringMappings.GetFullName(entity.Patient),
-            PregnancyWeek = entity.PregnancyWeek
+            PregnancyWeek = entity.PregnancyWeek,
+            Percent = entity.Percent
         });
     }
 

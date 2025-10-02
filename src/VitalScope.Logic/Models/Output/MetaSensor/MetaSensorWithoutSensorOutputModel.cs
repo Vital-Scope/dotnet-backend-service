@@ -29,4 +29,6 @@ public class MetaSensorWithoutSensorOutputModel
     public long? CreatedAt { get; set; }
     
     public long? UpdatedAt { get; set; }
+    
+    public float? Percent { get; set; }
 }

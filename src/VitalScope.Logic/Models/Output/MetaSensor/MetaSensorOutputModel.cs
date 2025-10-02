@@ -33,4 +33,6 @@ public sealed class MetaSensorOutputModel
     public long? UpdatedAt { get; set; }
     
     public string FullName { get; set; }
+
+    public float? Percent { get; set; }
 }
