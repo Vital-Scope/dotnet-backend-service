@@ -119,7 +119,9 @@ public sealed class PatientService : IPatientService
                     CreatedAt = entity.CreatedAt.ToTime(),
                     UpdatedAt = entity.UpdatedAt.ToTime(),
                     Notes = entity.Notes,
-                    FullName = MonitoringMappings.GetFullName(entity.Patient)
+                    FullName = MonitoringMappings.GetFullName(entity.Patient),
+                    Percent = entity.Percent,
+                    PregnancyWeek = entity.PregnancyWeek
                 })
             };
         }
