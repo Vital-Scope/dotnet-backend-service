@@ -33,12 +33,12 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: 176.108.245.175
-        username: radis
-        password: Radis123!
+        username: user1
+        key: ${{ secrets.SSHKEY }}
         port: 22
         script: |
           docker stop dotnet-backend-service || true
           docker rm dotnet-backend-service || true
           docker rmi rhammatov/vital_scope || true
           docker pull rhammatov/vital_scope:latest || true
-          docker run -d -ti --name dotnet-backend-service -p 8080:8080 -p 8081:8081 rhammatov/vital_scope:latest
+          docker run -d -ti --name dotnet-backend-service -p 8080:8080 rhammatov/vital_scope:latest
