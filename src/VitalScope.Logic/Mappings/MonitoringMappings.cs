@@ -38,7 +38,8 @@ public static class MonitoringMappings
             CreatedAt = entity.CreatedAt.ToTime(),
             UpdatedAt = entity.UpdatedAt.ToTime(),
             Notes = entity.Notes,
-            FullName = GetFullName(entity.Patient)
+            FullName = GetFullName(entity.Patient),
+            PregnancyWeek = entity.PregnancyWeek
         };
     }
 

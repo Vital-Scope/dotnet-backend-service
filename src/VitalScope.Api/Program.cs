@@ -38,7 +38,13 @@ try
 
     builder.Services.AddLogic();
     
-    builder.Services.AddSignalR();
+    builder.Services.AddSignalR(o =>
+    {
+        o.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
+       o.KeepAliveInterval = TimeSpan.FromSeconds(25);  
+        o.HandshakeTimeout = TimeSpan.FromSeconds(30);
+        o.EnableDetailedErrors = true;
+    });
     
     builder.Services.AddHttpClient("NodeHttpClient", (s, client) =>
     {
@@ -58,6 +64,7 @@ try
     
     builder.Services.AddHostedService<MigrationHostedService>();
     builder.Services.AddHostedService<MqttHostedService>();
+    builder.Services.AddHostedService<CheckHostedService>();
 
     builder.Services.AddDatabase<ApplicationDbContext>(CommonConsts.MigrationsHistoryTableName);
     builder.Services.AddDatabase<ApplicationIdentityDbContext>("__EFMigrationsIdentityHistoryApplication");
@@ -134,6 +141,7 @@ try
     app.UseRouting();
 
     app.MapHub<SensorHub>("/sensor-page");
+    app.MapHub<CheckHub>("/check-page");
     
     app.UseAuthentication();
     app.UseAuthorization();

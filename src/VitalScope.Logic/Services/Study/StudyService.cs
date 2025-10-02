@@ -56,7 +56,7 @@ public sealed class StudyService : IStudyService
                 InfoMetas = null,
                 CreatedAt = DateTime.Now.Date,
                 UpdatedAt = DateTime.Now.Date,
-                Notes = model.Notes,
+                Notes = model.Notes
             }, cancellationToken);
 
             var result = await _repository.GetFirstOrDefaultAsync(new StudySpecification(id), cancellationToken);
@@ -133,7 +133,8 @@ public sealed class StudyService : IStudyService
             CreatedAt = entity.CreatedAt.ToTime(),
             UpdatedAt = entity.UpdatedAt.ToTime(),
             Notes = entity.Notes,
-            FullName = MonitoringMappings.GetFullName(entity.Patient)
+            FullName = MonitoringMappings.GetFullName(entity.Patient),
+            PregnancyWeek = entity.PregnancyWeek
         });
     }
 

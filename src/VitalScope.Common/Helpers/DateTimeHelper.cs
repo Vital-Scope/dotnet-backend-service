@@ -13,4 +13,9 @@ public static class DateTimeHelper
     {
         return date == null ? null : new DateTimeOffset(date.Value).ToUnixTimeSeconds();
     }
+    
+    public static long ToTime(this DateTime date)
+    {
+        return new DateTimeOffset(date).ToUnixTimeSeconds();
+    }
 }
